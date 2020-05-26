@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log"
-	"net/url"
 	"os"
+
+	"github.com/ngynkvn/gemgo/gemini"
 )
 
 func GeminiTransaction() {
@@ -19,31 +21,17 @@ func GeminiTransaction() {
 	//C:   Handles response (see 1.3.4)
 }
 
-func parseURL(input string) *url.URL {
-	url, err := url.Parse(input)
-	if err != nil {
-		log.Fatal("Problem parsing input: ", input)
-	}
-	if url.Scheme == "" {
-		log.Println("Scheme was not given, assuming scheme gemini")
-		url.Scheme = "gemini"
-	}
-	// Spec Note:
-	// 	Sending an absolute URL instead of only a path or selector is
-	// effectively equivalent to building in a HTTP "Host" header.  It
-	// permits virtual hosting of multiple Gemini domains on the same IP
-	// address.  It also allows servers to optionally act as proxies.
-	// Including schemes other than gemini:// in requests allows servers to
-	// optionally act as protocol-translating gateways to e.g. fetch gopher
-	// resources over Gemini.  Proxying is optional and the vast majority of
-	// servers are expected to only respond to requests for resources at
-	// their own domain(s).
-	return url
-}
-
 func main() {
 	args := os.Args
-	url := parseURL(args[1])
-	log.Println("Visiting ", url)
+	url := gemini.ParseURL(args[1])
+	log.Println("Visiting", url.String())
 
+	gc := gemini.NewGeminiConnection(url)
+
+	n, err := gc.SendRequest(url)
+	fmt.Println(n, err)
+	header := gc.ReceiveHeader()
+	fmt.Println(header)
+	body := gc.ReceiveBody()
+	fmt.Println(body)
 }
