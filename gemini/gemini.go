@@ -85,9 +85,9 @@ func (header Header) String() string {
 }
 
 type Line struct {
-	lineType LineType
-	meta     string
-	raw      string
+	LineType LineType
+	Meta     string
+	Raw      string
 }
 
 type Body struct {
@@ -98,7 +98,7 @@ func (body Body) String() string {
 	var str bytes.Buffer
 	for i, v := range body.Lines {
 		// Print raw string for now.
-		str.WriteString(fmt.Sprintf("%d\t| %s\n", i, v.raw))
+		str.WriteString(fmt.Sprintf("%d\t| %s\n", i, v.Raw))
 	}
 	return str.String()
 }
@@ -144,7 +144,7 @@ func (gc *GeminiConnection) ReceiveHeader() Header {
 
 func interpretBody(lines []Line) string {
 	for i, v := range lines {
-		println(i, v.raw)
+		println(i, v.Raw)
 	}
 	return ""
 }
