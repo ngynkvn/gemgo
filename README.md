@@ -5,11 +5,16 @@ Gemgo is a primitive client for the [Gemini protocol](https://gemini.circumlunar
 a simple request-response transaction protocol somewhat similar to HTTP or Gopher
 
 ## Example
+#### To run
 ```
-PS C:\Users\Kev\Desktop\geminimi> go run .\main.go gemini.circumlunar.space
-2020/05/26 20:27:22 Scheme was not given, assuming scheme gemini
-2020/05/26 20:27:22 Log was not given, assuming port 1965
-2020/05/26 20:27:22 Visiting gemini://gemini.circumlunar.space:1965/
+go run ./cmd/client/app.go/ [url]
+```
+Try with `go run ./cmd/client/app.go/ gemini://gemini.circumlunar.space`
+```
+PS C:\Users\Kev\Desktop\geminimi> go run .\cmd\client\app.go gemini.circumlunar.space
+2020/05/26 20:30:06 Scheme was not given, assuming scheme gemini
+2020/05/26 20:30:06 Port was not given, assuming port 1965
+2020/05/26 20:30:06 Visiting gemini://gemini.circumlunar.space:1965/
 header [20] text/gemini
 0       | # Project Gemini
 1       |
