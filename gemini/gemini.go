@@ -98,7 +98,7 @@ func (body Body) String() string {
 	var str bytes.Buffer
 	for i, v := range body.Lines {
 		// Print raw string for now.
-		str.WriteString(fmt.Sprintf("%d: %s\n", i, v.raw))
+		str.WriteString(fmt.Sprintf("%d\t| %s\n", i, v.raw))
 	}
 	return str.String()
 }
