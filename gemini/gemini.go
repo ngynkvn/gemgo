@@ -94,6 +94,10 @@ type Body struct {
 	Lines []Line
 }
 
+func (body Body) LineHeight() int {
+	return len(body.Lines)
+}
+
 func (body Body) String() string {
 	var str bytes.Buffer
 	for i, v := range body.Lines {

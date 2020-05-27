@@ -14,8 +14,10 @@ type Window struct {
 	status      string
 	contents    gemini.Body
 	shouldClose bool
-	screenX     int
-	screenY     int
+	offsetX     int
+	offsetY     int
+	cursorX     int
+	cursorY     int
 }
 
 func (w Window) DrawLine(y int, line gemini.Line, maxWidth int) {
@@ -46,14 +48,22 @@ func (w *Window) Close() {
 }
 
 func (w *Window) ScrollUp() {
-	if w.screenY > 0 {
-		w.screenY--
+	if w.offsetY > 0 {
+		w.offsetY--
 	}
 }
 
 func (w *Window) ScrollDown() {
-	if w.screenY <= len(w.contents.Lines) {
-		w.screenY++
+	if w.offsetY < len(w.contents.Lines)-1 {
+		w.offsetY++
+	}
+}
+
+func (w *Window) handleEnter() {
+	// !! TODO !! This is gonna introduce a bug later
+	line := w.contents.Lines[w.offsetY+w.cursorY]
+	if line.LineType == gemini.Link {
+		w.status = fmt.Sprintf("GO(%s)", line.Meta)
 	}
 }
 
@@ -65,8 +75,12 @@ func (w *Window) handleEvent(event tcell.Event) {
 		//TODO
 		w.status = "interrupt"
 	}
+	if mouse, ok := event.(*tcell.EventMouse); ok {
+		x, y := mouse.Position()
+		w.status = fmt.Sprintf("MouseEvt(%d, %d)", x, y)
+	}
 	if key, ok := event.(*tcell.EventKey); ok {
-		w.status = fmt.Sprintf("key %s", key.Name())
+		w.status = fmt.Sprintf("Key(%s)", key.Name())
 		switch key.Key() {
 		case tcell.KeyCtrlC:
 			w.Close()
@@ -84,6 +98,8 @@ func (w *Window) handleEvent(event tcell.Event) {
 			w.ScrollDown()
 		case tcell.KeyUp:
 			w.ScrollUp()
+		case tcell.KeyEnter:
+			w.handleEnter()
 		}
 	}
 }
@@ -96,13 +112,23 @@ func (w *Window) Run() {
 	}
 }
 
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
 func (w *Window) Render() {
 	width, height := w.screen.Size()
 	body := w.contents
 	w.screen.Clear()
-	for y := 0; y < height && (y < len(body.Lines)-w.screenY); y++ {
-		line := body.Lines[y+w.screenY]
-		w.DrawLine(y, line, width)
+	w.screen.ShowCursor(w.cursorX, w.cursorY)
+	for y := 0; y < height; y++ {
+		if y+w.offsetY < len(body.Lines) {
+			line := body.Lines[y+w.offsetY]
+			w.DrawLine(y, line, width)
+		}
 	}
 	w.RenderStatusBar()
 	w.screen.Show()
@@ -110,6 +136,7 @@ func (w *Window) Render() {
 
 func NewWindow() Window {
 	screen, err := tcell.NewScreen()
+	screen.EnableMouse()
 	if err != nil {
 		log.Fatal(err)
 	}
