@@ -31,7 +31,7 @@ func ParseURL(input string) URL {
 	}
 	var port string
 	if port = url.Port(); port == "" {
-		log.Println("Log was not given, assuming port 1965")
+		log.Println("Port was not given, assuming port 1965")
 		port = "1965"
 	}
 	// Spec Note:
