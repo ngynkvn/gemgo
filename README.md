@@ -4,6 +4,7 @@ a Gemini Protocol compatible client (WIP)
 Gemgo is a primitive client for the [Gemini protocol](https://gemini.circumlunar.space/), 
 a simple request-response transaction protocol somewhat similar to HTTP or Gopher
 
+[![asciicast](https://asciinema.org/a/334262.svg)](https://asciinema.org/a/334262)
 ## Example
 #### To run
 ```
