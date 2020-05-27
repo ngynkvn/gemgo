@@ -33,7 +33,8 @@ header [20] text/gemini
 19      |
 20      | ## Web proxies
 21      |
-22      | => https://portal.mozz.us/?url=gemini%3A%2F%2Fgemini.circumlunar.space%2F&fmt=fixed   Gemini-to-web proxy service23      | => https://proxy.vulpes.one/gemini/gemini.circumlunar.space   Another Gemini-to-web proxy service
+22      | => https://portal.mozz.us/?url=gemini%3A%2F%2Fgemini.circumlunar.space%2F&fmt=fixed   Gemini-to-web proxy service
+23      | => https://proxy.vulpes.one/gemini/gemini.circumlunar.space   Another Gemini-to-web proxy service
 24      |
 25      | ## Search engines
 26      |
