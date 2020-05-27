@@ -28,10 +28,9 @@ func main() {
 
 	gc := gemini.NewGeminiConnection(url)
 
-	n, err := gc.SendRequest(url)
-	fmt.Println(n, err)
+	gc.SendRequest(url)
 	header := gc.ReceiveHeader()
-	fmt.Println(header)
-	body := gc.ReceiveBody()
-	fmt.Println(body)
+	fmt.Println("header", header)
+	gc.ReceiveBody()
+	// fmt.Println(body)
 }

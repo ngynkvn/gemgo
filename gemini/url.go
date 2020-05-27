@@ -48,7 +48,7 @@ func ParseURL(input string) URL {
 }
 
 func (url *URL) String() string {
-	return fmt.Sprintf("%s://%s:%s%s", url.scheme, url.host, url.port, url.path)
+	return fmt.Sprintf("%s://%s:%s%s/", url.scheme, url.host, url.port, url.path)
 }
 
 func (url *URL) Addr() string {
