@@ -2,7 +2,9 @@ package gemini
 
 import (
 	"bufio"
+	"bytes"
 	"crypto/tls"
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -78,6 +80,10 @@ type Header struct {
 	raw    string
 }
 
+func (header Header) String() string {
+	return fmt.Sprintf("[%d] %s", header.status, header.meta)
+}
+
 type Line struct {
 	lineType LineType
 	meta     string
@@ -86,6 +92,15 @@ type Line struct {
 
 type Body struct {
 	Lines []Line
+}
+
+func (body Body) String() string {
+	var str bytes.Buffer
+	for i, v := range body.Lines {
+		// Print raw string for now.
+		str.WriteString(fmt.Sprintf("%d: %s\n", i, v.raw))
+	}
+	return str.String()
 }
 
 const TERMINATOR = "\r\n"
@@ -146,7 +161,7 @@ func parseLine(text string) Line {
 	}
 }
 
-func (gc *GeminiConnection) readBody() []Line {
+func (gc *GeminiConnection) readBodyLines() []Line {
 	// Scan entire body
 	var lines []Line
 	for gc.scanner.Scan() {
@@ -159,7 +174,7 @@ func (gc *GeminiConnection) readBody() []Line {
 	return lines
 }
 
-func (gc *GeminiConnection) ReceiveBody() string {
-	body := gc.readBody()
-	return interpretBody(body)
+func (gc *GeminiConnection) ReceiveBody() Body {
+	lines := gc.readBodyLines()
+	return Body{lines}
 }
