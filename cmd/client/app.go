@@ -21,8 +21,11 @@ type Window struct {
 }
 
 func (w Window) DrawLine(y int, line gemini.Line, maxWidth int) {
-	for x, chr := range line.Raw {
-		w.screen.SetContent(x, y, chr, nil, tcell.StyleDefault)
+	display, lineStyle := line.Display()
+	style := tcell.StyleDefault.Underline(lineStyle == gemini.LinkStyle)
+
+	for x, chr := range display {
+		w.screen.SetContent(x, y, chr, nil, style)
 	}
 	// switch line.LineType {
 	// case gemini.Link:
@@ -62,8 +65,8 @@ func (w *Window) ScrollDown() {
 func (w *Window) handleEnter() {
 	// !! TODO !! This is gonna introduce a bug later
 	line := w.contents.Lines[w.offsetY+w.cursorY]
-	if line.LineType == gemini.Link {
-		w.status = fmt.Sprintf("GO(%s)", line.Meta)
+	if link, ok := line.(gemini.Link); ok {
+		w.status = fmt.Sprintf("GO(%s)", link.Link())
 	}
 }
 

@@ -11,7 +11,6 @@ import (
 )
 
 type Status int
-type LineType int
 
 // Status Codes
 const (
@@ -36,14 +35,6 @@ const (
 	CertificateNotAccepted        Status = 63
 	FutureCertificateRejected     Status = 64
 	ExpiredCertificateRejected    Status = 65
-)
-
-// LineTypes ...
-const (
-	Text LineType = iota
-	Link
-	PreformatToggle
-	// TODO Advanced Lines
 )
 
 var statusCodes = []Status{
@@ -84,10 +75,66 @@ func (header Header) String() string {
 	return fmt.Sprintf("[%d] %s", header.status, header.meta)
 }
 
-type Line struct {
-	LineType LineType
-	Meta     string
-	Raw      string
+type Style int
+
+const (
+	LinkStyle Style = iota
+	TextStyle
+	HeaderStyle
+)
+
+type Line interface {
+	Raw() string
+	Display() (string, Style)
+} // TODO Display info for client to receive
+
+type Link struct {
+	link     string
+	userText string
+	raw      string
+}
+
+func (l Link) Display() (string, Style) {
+	if len(strings.TrimSpace(l.userText)) == 0 {
+		return l.raw, LinkStyle
+	}
+	return l.userText, LinkStyle
+}
+
+func (l Link) UserText() string {
+	return l.userText
+}
+
+func (l Link) Link() string {
+	return l.link
+}
+
+func (t Link) Raw() string {
+	return t.raw
+}
+
+type PreformatToggle struct {
+	raw string
+}
+
+func (pt PreformatToggle) Display() (string, Style) {
+	return pt.raw, TextStyle
+}
+
+func (t PreformatToggle) Raw() string {
+	return t.raw
+}
+
+type Text struct {
+	raw string
+}
+
+func (t Text) Display() (string, Style) {
+	return t.raw, TextStyle
+}
+
+func (t Text) Raw() string {
+	return t.raw
 }
 
 type Body struct {
@@ -156,12 +203,13 @@ func interpretBody(lines []Line) string {
 func parseLine(text string) Line {
 	switch {
 	case strings.HasPrefix(text, "=> "):
-		link := text[3:]
-		return Line{Link, link, text}
+		text := text[3:]
+		parts := strings.Fields(text)
+		return Link{parts[0], strings.Join(parts[1:], " "), text}
 	case text == "```":
-		return Line{PreformatToggle, "", text}
+		return PreformatToggle{text}
 	default:
-		return Line{Text, "", text}
+		return Text{text}
 	}
 }
 
